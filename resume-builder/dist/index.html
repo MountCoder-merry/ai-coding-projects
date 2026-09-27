@@ -30,10 +30,12 @@
   const notify=(msg)=>{toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2200)};
   const toolbar=document.querySelector('.toolbar-left');
   const addTool=(id,label,handler)=>{const b=document.createElement('button');b.className='tool';b.id=id;b.textContent=label;b.onclick=handler;toolbar.appendChild(b)};
+  const overflowStatus=document.createElement('div');overflowStatus.className='drag-hint';overflowStatus.style.cssText='margin-top:10px;padding:9px 10px;border-radius:8px;background:#f0f0e9';document.querySelector('#pageSize').parentElement.parentElement.appendChild(overflowStatus);
+  const checkOverflow=()=>{const overflow=page.scrollHeight>page.clientHeight+8;overflowStatus.textContent=overflow?'⚠ 内容超出当前页面，请减少间距或新建页面。':'✓ 当前内容在页面安全范围内';overflowStatus.style.background=overflow?'#fff0e8':'#eef7df';overflowStatus.style.color=overflow?'#b9542d':'#4c713b'};
   const save=()=>{localStorage.setItem('framework-resume',JSON.stringify({html:page.innerHTML,accent:document.querySelector('#accent').value})); localStorage.setItem('framework-resume-time',Date.now());};
   const snapshot=()=>{history=history.slice(0,historyIndex+1);history.push(page.innerHTML);historyIndex++;save()};
   const restore=()=>{const saved=localStorage.getItem('framework-resume');if(saved){try{const x=JSON.parse(saved);page.innerHTML=x.html;if(x.accent){document.querySelector('#accent').value=x.accent;document.documentElement.style.setProperty('--violet',x.accent)}}catch{}} snapshot()};
-  page.addEventListener('input',()=>{clearTimeout(window.saveTimer);window.saveTimer=setTimeout(()=>{save();notify('已自动保存')},500)});
+  page.addEventListener('input',()=>{clearTimeout(window.saveTimer);window.saveTimer=setTimeout(()=>{save();checkOverflow();notify('已自动保存')},500)});
   document.querySelector('#undoBtn').onclick=()=>{if(historyIndex>0){historyIndex--;page.innerHTML=history[historyIndex];save();notify('已撤销')}};
   document.querySelector('#redoBtn').onclick=()=>{if(historyIndex<history.length-1){historyIndex++;page.innerHTML=history[historyIndex];save();notify('已重做')}};
   document.querySelector('#exportBtn').onclick=()=>{save();window.print()};
@@ -61,7 +63,8 @@
   document.querySelector('#matchBtn').onclick=()=>{const jd=document.querySelector('#jd').value.trim();notify(jd?'匹配度 82% · 已找到 6 个可强化关键词':'请先粘贴目标岗位描述')};
   document.querySelectorAll('.template').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.template').forEach(x=>x.classList.remove('active'));btn.classList.add('active');const t=btn.dataset.template;page.style.filter=t==='mono'?'grayscale(.7)':t==='classic'?'hue-rotate(30deg)':'';notify(`已切换 ${btn.querySelector('span').textContent.split(' / ')[0]} 模板`);snapshot()});
   document.querySelector('#accent').oninput=e=>{document.documentElement.style.setProperty('--violet',e.target.value);save()};
+  document.querySelector('#pageSize').onchange=e=>{const letter=e.target.value.startsWith('Letter');page.style.width=letter?'816px':'794px';page.style.minHeight=letter?'1056px':'1123px';page.dataset.size=letter?'letter':'a4';save();checkOverflow();notify(letter?'已切换 Letter 页面':'已切换 A4 页面')};
   document.querySelector('#fileInput').onchange=e=>{const f=e.target.files[0];if(f){notify(`${f.name} 已上传，正在识别内容…`);if(f.type==='text/plain'||f.name.toLowerCase().endsWith('.txt')){const reader=new FileReader();reader.onload=()=>{const text=String(reader.result||'');page.querySelector('[data-key="summary"]').textContent=text.slice(0,260);snapshot();notify('文本已导入简介，请检查后继续编辑')};reader.readAsText(f)}else setTimeout(()=>notify('文件已接收：PDF/DOCX 解析接口待接入，请先确认字段'),800)}};
-  restore(); refreshVersions(); makeSelectable(); enableDrag();
+  restore(); refreshVersions(); makeSelectable(); enableDrag(); checkOverflow();
 </script>
 </body></html>
