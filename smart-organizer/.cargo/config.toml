@@ -1,0 +1,10 @@
+# Use a sparse registry mirror for reproducible local Windows builds when the
+# system Schannel cannot establish a crates.io TLS session.
+[source.crates-io]
+replace-with = "rsproxy"
+
+[source.rsproxy]
+registry = "sparse+https://rsproxy.cn/index/"
+
+[net]
+git-fetch-with-cli = true

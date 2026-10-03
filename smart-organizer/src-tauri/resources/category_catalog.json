@@ -1,0 +1,9 @@
+{
+  "Images": ["jpg", "jpeg", "png", "gif", "webp", "svg", "heic", "raw", "arw", "cr2", "nef"],
+  "Videos": ["mp4", "mov", "mkv", "avi", "webm", "m4v"],
+  "Documents": ["pdf", "doc", "docx", "txt", "md", "rtf", "ppt", "pptx", "xls", "xlsx", "csv"],
+  "Archives": ["zip", "rar", "7z", "tar", "gz"],
+  "Audio": ["mp3", "wav", "flac", "aac", "m4a"],
+  "Code": ["js", "ts", "jsx", "tsx", "py", "rs", "java", "cpp", "c", "go", "html", "css", "json", "yaml", "yml"],
+  "Applications": ["exe", "msi", "dmg", "pkg"]
+}
